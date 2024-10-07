@@ -14,7 +14,7 @@ export default function Tasks({}: Props) {
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTaskName(e.target.value);
     }
-    const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setTaskDescription(e.target.value);
     }
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,7 +23,7 @@ export default function Tasks({}: Props) {
     const handleDifficultyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTaskDifficulty(e.target.id);
     }
-    const handlePriorityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handlePriorityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setTaskPriority(e.target.value);
     }
     const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
