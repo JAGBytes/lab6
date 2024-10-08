@@ -4,6 +4,7 @@ import styles from './Task.module.css'
 type Props = {
     id: string;
     name: string;
+    index: number,
     description: string;
     isCompleted: boolean;
     priority: number;
@@ -11,14 +12,15 @@ type Props = {
     dueDate: string;
     creationDate: string;
     estimatedTime: number;
-    onCheckboxChange?: (id: string) => void;
-    onDelete?: (id: string) => void;
+    onCheckboxChange?: (id: string, index : number) => void;
+    onDelete?: (id: string , index : number) => void;
 };
 
 export default function Load(props: Props) {
     const {
         id,
         name,
+        index,
         description,
         isCompleted,
         priority,
@@ -31,11 +33,11 @@ export default function Load(props: Props) {
     } = props;
 
     const handleCheckboxChange = () => {
-        onCheckboxChange?.(id);
+        onCheckboxChange?.(id,index);
     };
 
     const handleDelete = () => {
-        onDelete?.(id);
+        onDelete?.(id,index);
     };
 
     const completedClass = isCompleted ? 'COMPLETED' : '';
