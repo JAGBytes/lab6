@@ -2,25 +2,23 @@ import React from 'react';
 import styles from './Task.module.css'
 
 type Props = {
-    id: string;
+    id?: string;
     name: string;
-    index: number,
     description: string;
-    isCompleted: boolean;
+    isCompleted?: boolean;
     priority: number;
     difficulty: string;
     dueDate: string;
-    creationDate: string;
+    creationDate?: string;
     estimatedTime: number;
-    onCheckboxChange?: (id: string, index : number) => void;
-    onDelete?: (id: string , index : number) => void;
+    onCheckboxChange: (id: string) => void;
+    onDelete: (id: string) => void;
 };
 
 export default function Load(props: Props) {
     const {
         id,
         name,
-        index,
         description,
         isCompleted,
         priority,
@@ -33,11 +31,15 @@ export default function Load(props: Props) {
     } = props;
 
     const handleCheckboxChange = () => {
-        onCheckboxChange?.(id,index);
+        if (id){
+            onCheckboxChange(id);
+        }
     };
 
     const handleDelete = () => {
-        onDelete?.(id,index);
+        if (id){
+            onDelete(id);
+        }
     };
 
     const completedClass = isCompleted ? 'COMPLETED' : '';
@@ -58,7 +60,7 @@ export default function Load(props: Props) {
                 disabled={isCompleted}
             />
             <div className={styles['task-priority']}>
-                <div className={[styles.circle, styles[priorityClass]].join(' ')}><span>{priority}</span></div>
+                <div className={[styles['circle'], styles[priorityClass]].join(' ')}><span>{priority}</span></div>
                 <h2>{name}</h2>
             </div>
             <p style={{ opacity: 0.8 }}>{description}</p>

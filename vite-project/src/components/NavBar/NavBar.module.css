@@ -4,10 +4,6 @@
     align-items: center;
 }
 
-.header-logo { /* Antes: img */
-    height: 50px;
-}
-
 .header-title { /* Antes: h1 */
     margin-left: 1rem;
 }
@@ -36,7 +32,6 @@
 
 .header {
     display: flex;
-    flex-direction: row;
     justify-content: space-between; 
     align-items: center; 
     background-color: #15505d;

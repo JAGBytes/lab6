@@ -1,44 +1,22 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import styles from './Task.module.css'
-import axios from "axios";
+import Load from './Load';
+import * as serviceTasks from '../Services/Service';
+import { Task } from "../Services/TaskObject";
 
-import Load from './Load'
-type Task = {
-    id: string;
-    name: string;
-    description: string;
-    isCompleted: boolean;
-    priority: number;
-    difficulty: string;
-    dueDate: string;
-    creationDate: string;
-    estimatedTime: number;
-    onCheckboxChange?: (id: string) => void;
-    onDelete?: (id: string) => void;
-};
+
 
 type Props = {};
 
-const baseURL = "http://localhost:80/taskManager/getTasks";
-
 export default function Tasks({}: Props) {
-
-    const[index,setIndex] = useState(0);
-
-    const handleIndex = () =>{
-        setIndex(index+1);
-        return index;
-    }
-
     const [post, setPost] = useState<Task[]>([]);
-
     const [taskName, setTaskName] = useState('');
     const [taskDescription, setTaskDescription] = useState('');
     const [taskDate, setTaskDate] = useState('');
     const [taskDifficulty, setTaskDifficulty] = useState('');
-    const [taskPriority, setTaskPriority] = useState('');
-    const [taskTime, setTaskTime] = useState('');
-
+    const [taskPriority, setTaskPriority] = useState(1);
+    const [taskTime, setTaskTime] = useState(0.1);
+    
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTaskName(e.target.value);
     }
@@ -52,69 +30,87 @@ export default function Tasks({}: Props) {
         setTaskDifficulty(e.target.id);
     }
     const handlePriorityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setTaskPriority(e.target.value);
+        setTaskPriority(parseInt(e.target.value));
     }
     const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTaskTime(e.target.value);
+        setTaskTime(parseFloat(e.target.value));
     }
 
-    React.useEffect(() => {
-        axios.get('http://localhost:80/taskManager/getTasks') // Reemplaza con tu URL real
-            .then((response) => {
-                setPost(response.data);
-            })
-            .catch((error) => {
-                console.error('Error fetching tasks:', error);
-            });
-            console.log(post)
+    useEffect(() => {
+        getTasks();
     }, []);
 
-    const addTask = async () => {
-        try {
-            const response = await axios.post("http://localhost:80/taskManager/saveTask", {                
-                name: taskName,
-                description: taskDescription,
-                dueDate: taskDate,
-                difficulty: taskDifficulty,
-                priority: taskPriority,
-                estimatedTime: taskTime
-            });
-
-            setPost([...post, response.data]);
-
-            // Limpiar campos después de agregar
-            setTaskName('');
-            setTaskDescription('');
-            setTaskDate('');
-            setTaskDifficulty('');
-            setTaskPriority('');
-            setTaskTime('');
-        } catch (error) {
-            console.error("Error adding task:", error);
+    const getTasks = async () => {
+        const answer = await serviceTasks.getTasks();
+        setPost(answer.data);
+    }
+    
+    const addTask = async () => {   
+        if (!taskName || !taskDescription || !taskDate || !taskDifficulty || !taskPriority || !taskTime) {
+            alert('Please fill all the fields');
+            return;
+        }  
+        if(taskName.length > 30){
+            alert('The title is too long');
+            return;
         }
+        if (taskDescription.length > 50) {
+            alert('The description is too long');
+            return;
+        }
+        if (taskTime < 0){
+            alert('You cannot add negative time');
+            return;
+       }    
+       let currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0);
+        let selectedDate = new Date(taskDate);
+        selectedDate.setHours(0, 0, 0, 0);
+        console.log(currentDate);
+        console.log(selectedDate);
+        if (selectedDate < currentDate) {
+            alert('The due date must be greater than the current date');
+            return;
+        }; 
+        const updatedTask: Task = {
+            name: taskName,
+            description: taskDescription,
+            dueDate: taskDate,
+            difficulty: taskDifficulty,
+            priority: taskPriority,
+            estimatedTime: taskTime
+          };
+        
+        await serviceTasks.saveNewTask(updatedTask);
+        getTasks();
+        
+        setTaskName('');
+        setTaskDescription('');
+        setTaskDate('');
+        setTaskDifficulty('');
+        setTaskPriority(1);
+        setTaskTime(0.1);
+        
     }
 
-    const handleAddTaskClick = async () => {
-        await addTask();
-        console.log(post)
-    };
-    const deleteTask = async (taskId: string, index: number) => {
-        try {
-            // Interpolación de cadenas usando backticks
-            await axios.delete(`http://localhost:80/taskManager/delete?id=${taskId}`);
-    
-            
-            setPost(post.splice(index,1));
-            console.log(index);
-        } catch (error) {
-            console.error('Error deleting task:', error);
-            // Aquí puedes manejar el error, por ejemplo, mostrar un mensaje al usuario
-        }
-    };
+    const deleteTask = async (taskId: string) => {
+        await serviceTasks.deleteTask(taskId);
+        getTasks();
+    }
+
+    const changeToCompleted = async (taskId: string) => {
+        await serviceTasks.completeTask(taskId);
+        getTasks();
+    }
+
+    const generateRandomTasks = async () => {
+        await serviceTasks.randomTasks();
+        getTasks();
+    }
 
 
   return (
-    <main className={styles['main-container']}>
+    <div className={styles['main-container']}>
     <div className={styles['task-form']}>
         <div className={styles['form-group']}>
             <label htmlFor="taskTitle"><b>Title</b></label>
@@ -130,7 +126,7 @@ export default function Tasks({}: Props) {
         <div className={styles['form-group']}>
             <label htmlFor="taskDescription"><b>Description</b></label>
             <textarea 
-                id="taskDescription" 
+                className={styles['taskDescription']} 
                 placeholder="Enter a description (no more than 50 characters)" 
                 maxLength={50} 
                 value={taskDescription}
@@ -141,27 +137,27 @@ export default function Tasks({}: Props) {
             <label><b>Difficulty</b></label>
             <div className={styles['form-group']}>
                 <span className={styles['opcion-radio']}>
-                    <input type="radio" id="high" name="taskDifficulty"  
-                    value="high"
-                    checked={ taskDifficulty === 'high' }
+                    <input type="radio" id="High" name="taskDifficulty"  
+                    value="High"
+                    checked={ taskDifficulty === 'High' }
                     onChange={handleDifficultyChange}/>
-                    <label htmlFor="high">High</label>
+                    <label htmlFor="High">High</label>
                 </span>
 
                 <span className={styles['opcion-radio']}>
-                    <input type="radio" id="middle" name="taskDifficulty" 
-                   value="middle"
-                   checked={ taskDifficulty === 'middle' }
+                    <input type="radio" id="Middle" name="taskDifficulty" 
+                   value="Middle"
+                   checked={ taskDifficulty === 'Middle' }
                    onChange={handleDifficultyChange}/>
-                    <label htmlFor="middle">Middle</label>
+                    <label htmlFor="Middle">Middle</label>
                 </span>
 
                 <span className={styles['opcion-radio']}>
-                    <input type="radio" id="low" name="taskDifficulty" 
-                    value="low"
-                    checked={ taskDifficulty === 'low' }
+                    <input type="radio" id="Low" name="taskDifficulty" 
+                    value="Low"
+                    checked={ taskDifficulty === 'Low' }
                     onChange={handleDifficultyChange} />
-                    <label htmlFor="low">Low</label>
+                    <label htmlFor="Low">Low</label>
                 </span>
             </div>
         </div>
@@ -200,16 +196,14 @@ export default function Tasks({}: Props) {
                 value={taskDate}
                 onChange={handleDateChange}/>
             </div>
-            <button onClick={() => handleAddTaskClick()}>Add</button>
+            <button onClick={() => addTask()}>Add</button>
         </div>
-        <button /*onClick={() => generateRandomTasks()}*/>Generate Random Tasks</button>
+        <button onClick={() => generateRandomTasks()}>Generate Random Tasks</button>
     </div>
-    <div id="task-container" className={styles['task-container']}>
-        {post.map((task) => <Load
-        
-        key={task.id}
+    <div className={styles['task-container']}>
+        {post.map((task, i) => <Load
+        key={i}
         id={task.id}
-        index={handleIndex()}
         name={task.name}
         description={task.description}
         isCompleted={task.isCompleted}
@@ -219,8 +213,9 @@ export default function Tasks({}: Props) {
         creationDate={task.creationDate}
         estimatedTime={task.estimatedTime}
         onDelete={deleteTask}
+        onCheckboxChange={changeToCompleted}
         ></Load> )}
     </div>
-</main>
+</div>
 )
 }

@@ -1,19 +1,11 @@
 import React, { useState } from 'react';
 import styles from "./NavBar.module.css"
 import logo from '../../assets/logo.png'; 
+import { Link } from 'react-router-dom';
 
-interface Props {
-    onSelect: (page: string) => void;
-};
 
-function NavBar({onSelect}: Props ) {
-    const [page, setPage] = useState("Home");
-
-    const handlePageChange = (newPage: string) => {
-    setPage(newPage);
-    onSelect(newPage);
-    };
-
+function NavBar() {
+    
     return (
     
     <header className={styles['header']}>
@@ -25,13 +17,12 @@ function NavBar({onSelect}: Props ) {
         <nav>
             <ul className={styles['nav-list']}>
                 <li>
-                    <a className={styles['nav-link']} onClick={() => handlePageChange("Tasks")}>Tasks</a>
+                    <Link to="/" className={styles['nav-link']}>Tasks</Link>
                 </li>
                 <li>
-                    <a className={styles['nav-link']} onClick={() => handlePageChange("Insights")}>Insights</a>
+                    <Link to="/insights" className={styles['nav-link']} >Insights</Link>
                 </li>
-            </ul>
-            <p>Página Actual: {page}</p>            
+            </ul>        
         </nav>
     </header>
 
