@@ -1,9 +1,14 @@
 import React, { useState } from 'react'
 import styles from './Task.module.css'
+import axios from "axios";
 
-type Props = {}
+type Props = {};
+
+const baseURL = "https://taskmanagercvds-bjdmg9hwaaa7erg0.eastus-01.azurewebsites.net/taskManager/getTasks";
 
 export default function Tasks({}: Props) {
+    const [post, setPost] = React.useState(null);
+
     const [taskName, setTaskName] = useState('');
     const [taskDescription, setTaskDescription] = useState('');
     const [taskDate, setTaskDate] = useState('');
@@ -30,6 +35,15 @@ export default function Tasks({}: Props) {
         setTaskTime(e.target.value);
     }
 
+    React.useEffect(() => {
+        axios.get(baseURL).then((response) => {
+            setPost(response.data);
+        });
+        
+    }, []);
+
+    if (!post) return null;
+
     function addTask(){
         console.log(taskName);
         console.log(taskDescription);
@@ -37,6 +51,7 @@ export default function Tasks({}: Props) {
         console.log(taskDifficulty);
         console.log(taskPriority);
         console.log(taskTime);
+        console.log(post);
     }
 
   return (
