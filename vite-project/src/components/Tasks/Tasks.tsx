@@ -2,12 +2,35 @@ import React, { useState } from 'react'
 import styles from './Task.module.css'
 import axios from "axios";
 
+import Load from './Load'
+type Task = {
+    id: string;
+    name: string;
+    description: string;
+    isCompleted: boolean;
+    priority: number;
+    difficulty: string;
+    dueDate: string;
+    creationDate: string;
+    estimatedTime: number;
+    onCheckboxChange?: (id: string) => void;
+    onDelete?: (id: string) => void;
+};
+
 type Props = {};
 
-const baseURL = "https://taskmanagercvds-bjdmg9hwaaa7erg0.eastus-01.azurewebsites.net/taskManager/getTasks";
+const baseURL = "http://localhost:80/taskManager/getTasks";
 
 export default function Tasks({}: Props) {
-    const [post, setPost] = React.useState(null);
+
+    const[index,setIndex] = useState(0);
+
+    const handleIndex = () =>{
+        setIndex(index+1);
+        return index;
+    }
+
+    const [post, setPost] = useState<Task[]>([]);
 
     const [taskName, setTaskName] = useState('');
     const [taskDescription, setTaskDescription] = useState('');
@@ -36,23 +59,59 @@ export default function Tasks({}: Props) {
     }
 
     React.useEffect(() => {
-        axios.get(baseURL).then((response) => {
-            setPost(response.data);
-        });
-        
+        axios.get('http://localhost:80/taskManager/getTasks') // Reemplaza con tu URL real
+            .then((response) => {
+                setPost(response.data);
+            })
+            .catch((error) => {
+                console.error('Error fetching tasks:', error);
+            });
+            console.log(post)
     }, []);
 
-    if (!post) return null;
+    const addTask = async () => {
+        try {
+            const response = await axios.post("http://localhost:80/taskManager/saveTask", {                
+                name: taskName,
+                description: taskDescription,
+                dueDate: taskDate,
+                difficulty: taskDifficulty,
+                priority: taskPriority,
+                estimatedTime: taskTime
+            });
 
-    function addTask(){
-        console.log(taskName);
-        console.log(taskDescription);
-        console.log(taskDate);
-        console.log(taskDifficulty);
-        console.log(taskPriority);
-        console.log(taskTime);
-        console.log(post);
+            setPost([...post, response.data]);
+
+            // Limpiar campos después de agregar
+            setTaskName('');
+            setTaskDescription('');
+            setTaskDate('');
+            setTaskDifficulty('');
+            setTaskPriority('');
+            setTaskTime('');
+        } catch (error) {
+            console.error("Error adding task:", error);
+        }
     }
+
+    const handleAddTaskClick = async () => {
+        await addTask();
+        console.log(post)
+    };
+    const deleteTask = async (taskId: string, index: number) => {
+        try {
+            // Interpolación de cadenas usando backticks
+            await axios.delete(`http://localhost:80/taskManager/delete?id=${taskId}`);
+    
+            
+            setPost(post.splice(index,1));
+            console.log(index);
+        } catch (error) {
+            console.error('Error deleting task:', error);
+            // Aquí puedes manejar el error, por ejemplo, mostrar un mensaje al usuario
+        }
+    };
+
 
   return (
     <main className={styles['main-container']}>
@@ -141,11 +200,26 @@ export default function Tasks({}: Props) {
                 value={taskDate}
                 onChange={handleDateChange}/>
             </div>
-            <button onClick={() => addTask()}>Add</button>
+            <button onClick={() => handleAddTaskClick()}>Add</button>
         </div>
         <button /*onClick={() => generateRandomTasks()}*/>Generate Random Tasks</button>
     </div>
     <div id="task-container" className={styles['task-container']}>
+        {post.map((task) => <Load
+        
+        key={task.id}
+        id={task.id}
+        index={handleIndex()}
+        name={task.name}
+        description={task.description}
+        isCompleted={task.isCompleted}
+        priority={task.priority}
+        difficulty={task.difficulty}
+        dueDate={task.dueDate}
+        creationDate={task.creationDate}
+        estimatedTime={task.estimatedTime}
+        onDelete={deleteTask}
+        ></Load> )}
     </div>
 </main>
 )
