@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import style from './Insights.module.css'
 import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
@@ -7,6 +6,7 @@ import TaskDifficultyChart from '../loadDifficultyDiagram/';
 import PriorityDiagram from '../loadPriorityDiagram/'
 import TimeDiagram from '../loadTimeDiagram/'
 import TotalTimeDiagram from '../loadTotalTimeDiagram/'
+import React, { useEffect, useState } from 'react';
 
 type Props = {}
 
@@ -15,7 +15,7 @@ export default function Insight({}: Props) {
 
     const handleGraphicChange = (e : React.ChangeEvent<HTMLSelectElement>) => {setData(e.target.value);} 
 
-    function ChangeGraphic() {
+    const ChangeGraphic = () => {
         switch (data){
             case "difficultyHistogram":
                 return <TaskDifficultyChart/>

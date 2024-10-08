@@ -24,6 +24,10 @@ function NavBar() {
                 </li>
             </ul>        
         </nav>
+        <div className={styles['user']}>
+            <h4>Welcome, user123</h4>
+            <button className={styles['button']}>Log Out</button>
+        </div>
     </header>
 
     );

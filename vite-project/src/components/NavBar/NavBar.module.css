@@ -40,3 +40,19 @@
     box-sizing: border-box; 
     width: 100%; 
 }
+.user{
+    display: flex;
+    gap: 35px;
+    align-items: center;
+    align-content: center;
+}
+.button{
+    background-color: #7bd179;
+    border-radius: 9px;
+    height: 40px;
+    align-items: center;
+}
+
+.button:hover { /* Antes: nav ul li a:hover */
+    background-color: #eefb03;
+}
