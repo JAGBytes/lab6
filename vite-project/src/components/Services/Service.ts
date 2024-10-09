@@ -4,14 +4,15 @@ import { Task } from "./TaskObject";
 const API = 'http://localhost:80/taskManager/';
 
 
-export const getTasks = async () => {
-    return axios.get<Task []>(API+'getTasks');
+export const getTasks = async (idUser :string) => {
+    return axios.get<Task []>(API+'getTasksByUser?userId='+idUser);
 }
 
-export const saveNewTask = async (newTask: Task) => {
-    return axios.post<any>(API+'saveTask', newTask);
+export const saveNewTask = async (idUser : string, newTask: Task) => {
+    return axios.post<any>(API+'saveTaskByUser?='+idUser, newTask);
 }
 
+/*preguntar a back que que o que*/
 export const deleteTask = async (idTask: string) => {
     return axios.delete<any>(API+'delete?id='+idTask);
 }

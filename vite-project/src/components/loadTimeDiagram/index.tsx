@@ -1,18 +1,26 @@
 import React, { useEffect, useRef } from 'react';
 import { Chart, registerables } from 'chart.js';
 import { getTasks } from '../Services/Service'; 
+import {Task} from '../Services/TaskObject'
 Chart.register(...registerables);
 
-// Función para llamar a la API y obtener las tareas
-async function callTasks() {
-    const res = await getTasks();
+type Props = {
+    idUser : string
+}
+
+async function callTasks(idUser : string) {
+    const res = await getTasks(idUser);
     return res.data; 
     
 }
 
-const TimeDiagram: React.FC = () => {
+const TimeDiagram: React.FC<Props> = ({idUser}) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const chartRef = useRef<Chart | null>(null);
+
+    const handleCallTasks = () =>{
+        return callTasks(idUser);
+    }
 
     useEffect(() => {
         // Destruir el gráfico existente si ya existe
@@ -23,8 +31,7 @@ const TimeDiagram: React.FC = () => {
     }, []);
 
     async function loadTimeDiagram() {
-        const data = await callTasks();
-        if (!data) return;
+        const data = await handleCallTasks();
 
         let timeSum: { [key: string]: number } = {};
 

@@ -8,23 +8,26 @@ import TimeDiagram from '../loadTimeDiagram/'
 import TotalTimeDiagram from '../loadTotalTimeDiagram/'
 import React, { useEffect, useState } from 'react';
 
-type Props = {}
 
-export default function Insight({}: Props) {
+type Props = {
+    idUser: string;
+};
+export default function Insight(props: Props) {
+    const {idUser} = props;
     const [data,setData] = useState("difficultyHistogram");
-
     const handleGraphicChange = (e : React.ChangeEvent<HTMLSelectElement>) => {setData(e.target.value);} 
+    
 
     const ChangeGraphic = () => {
         switch (data){
             case "difficultyHistogram":
-                return <TaskDifficultyChart/>
+                return <TaskDifficultyChart idUser={idUser}/>
             case "tasksCompletedOverTime":
-                return <TimeDiagram/>
+                return <TimeDiagram idUser={idUser}/>
             case "taskAveragesByPriority":
-                return <PriorityDiagram/>
+                return <PriorityDiagram idUser={idUser}/>
             case "totalTimeSpent":
-                return <TotalTimeDiagram/>
+                return <TotalTimeDiagram idUser={idUser}/>
         }
     }
 

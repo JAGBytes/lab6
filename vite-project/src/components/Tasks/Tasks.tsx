@@ -6,9 +6,12 @@ import { Task } from "../Services/TaskObject";
 
 
 
-type Props = {};
+type Props = {
+    idUser: string;
+};
 
-export default function Tasks({}: Props) {
+export default function Tasks(props: Props) {
+    const {idUser} = props;
     const [post, setPost] = useState<Task[]>([]);
     const [taskName, setTaskName] = useState('');
     const [taskDescription, setTaskDescription] = useState('');
@@ -41,7 +44,7 @@ export default function Tasks({}: Props) {
     }, []);
 
     const getTasks = async () => {
-        const answer = await serviceTasks.getTasks();
+        const answer = await serviceTasks.getTasks(props.idUser);
         setPost(answer.data);
     }
     
@@ -81,7 +84,7 @@ export default function Tasks({}: Props) {
             estimatedTime: taskTime
           };
         
-        await serviceTasks.saveNewTask(updatedTask);
+        await serviceTasks.saveNewTask(idUser, updatedTask);
         getTasks();
         
         setTaskName('');

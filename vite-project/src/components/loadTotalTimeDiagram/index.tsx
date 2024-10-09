@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Chart, ChartConfiguration, Colors } from 'chart.js';
+import {Task} from '../Services/TaskObject'
 import { getTasks } from '../Services/Service'; 
 const colors = {
     PURPLE: '#afd1c6',
@@ -9,16 +10,23 @@ const colors = {
     BLUE: '#7bd179'
 };
 
-// Función para llamar a la API y obtener las tareas
-async function callTasks() {
-    const res = await getTasks();
+type Props = {
+    idUser : string
+}
+
+async function callTasks(idUser : string) {
+    const res = await getTasks(idUser);
     return res.data; 
     
 }
 
-const TotalTimeDiagram: React.FC = () => {
+const TotalTimeDiagram: React.FC<Props> = ({idUser}) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const chartRef = useRef<Chart | null>(null);
+
+    const handleCallTasks = () =>{
+        return callTasks(idUser);
+    }
 
     useEffect(() => {
         // Destruir el gráfico existente si ya existe
@@ -29,7 +37,8 @@ const TotalTimeDiagram: React.FC = () => {
     }, []);
 
     async function loadTotalTimeDiagram() {
-        const data = await callTasks();
+        const data = await handleCallTasks();
+        
         if (!data) return;
 
         const dataValues: { [key: string]: number } = { "High": 0, "Middle": 0, "Low": 0 };

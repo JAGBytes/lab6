@@ -12,16 +12,24 @@ const colors = {
     BLUE: '#7bd179'
 };
 
+type Props = {
+    idUser : string
+}
+
 // callTasks ahora devuelve la promesa de los datos.
-async function callTasks() {
-    const res = await getTasks();
+async function callTasks(idUser : string) {
+    const res = await getTasks(idUser);
     return res.data; 
     
 }
 
-const TaskDifficultyChart: React.FC = () => {
+const TaskDifficultyChart: React.FC<Props> = ({idUser}) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const chartRef = useRef<Chart | null>(null);
+
+    const handleCallTasks = () =>{
+        return callTasks(idUser);
+    }
 
     useEffect(() => {
         // Destruir el gráfico existente si ya existe
@@ -32,8 +40,9 @@ const TaskDifficultyChart: React.FC = () => {
     }, []);
     
     async function loadDifficultyDiagram() {
-        const data = await callTasks(); // Espera los datos de la función callTasks
-        if (!data) return; // Si no hay datos, salir de la función para evitar errores.
+        const dataTask = await handleCallTasks();
+
+        if (!dataTask) return; // Si no hay datos, salir de la función para evitar errores.
 
         if (canvasRef.current) {
             const ctx = canvasRef.current.getContext('2d');
@@ -43,8 +52,8 @@ const TaskDifficultyChart: React.FC = () => {
             let dataValues: { [key: string]: number } = { "High": 0, "Middle": 0, "Low": 0 };
 
             // Recorrer los datos y contar las dificultades
-            for (let i = 0; i < data.length; i++) {
-                const difficulty = data[i].difficulty;
+            for (let i = 0; i < dataTask.length; i++) {
+                const difficulty = dataTask[i].difficulty;
                 if (difficulty in dataValues) {
                     dataValues[difficulty] += 1;
                 } else {

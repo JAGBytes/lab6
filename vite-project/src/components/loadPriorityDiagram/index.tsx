@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Chart, registerables } from 'chart.js';
+import {Task} from '../Services/TaskObject'
 import { getTasks } from '../Services/Service'; 
 Chart.register(...registerables);
 
@@ -11,16 +12,23 @@ const colors = {
     BLUE: '#7bd179'
 };
 
-// Función para llamar a la API y obtener las tareas
-async function callTasks() {
-    const res = await getTasks();
+type Props = {
+    idUser : string
+}
+
+async function callTasks(idUser : string) {
+    const res = await getTasks(idUser);
     return res.data; 
     
 }
 
-const PriorityDiagram: React.FC = () => {
+const PriorityDiagram: React.FC<Props> = ({idUser}) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const chartRef = useRef<Chart | null>(null);
+
+    const handleCallTasks = () =>{
+        return callTasks(idUser);
+    }
 
     useEffect(() => {
     // Destruir el gráfico existente si ya existe
@@ -31,7 +39,7 @@ const PriorityDiagram: React.FC = () => {
     }, []);
 
     async function loadPriorityDiagram() {
-        const data = await callTasks(); // Espera los datos de la función callTasks
+        const data = await handleCallTasks();
         if (!data) return; // Si no hay datos, salir de la función para evitar errores.
 
         if (canvasRef.current) {
