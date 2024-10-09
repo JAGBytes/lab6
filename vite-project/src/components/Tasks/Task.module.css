@@ -125,6 +125,7 @@
 .task p{
     margin-top: 2px;
     margin-bottom: 8px;
+    font-style: bold;
 }
 .task-checkbox {
     position: absolute;

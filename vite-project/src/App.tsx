@@ -2,6 +2,7 @@ import './App.css';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
 import Register from './components/Register/index'
 import Login from './components/Login/index'
+import User from './components/User/index';
 
 function App() {
   

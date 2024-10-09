@@ -9,12 +9,12 @@ type Props = {
 }
 
 function User(props : Props) {
-    const {idUser} = props;
+  const {idUser} = props;
   return (
     <BrowserRouter>
     <NavBar/>
         <Routes>
-            <Route path="/" element={<Tasks idUser={idUser}/>} />
+            <Route path="/tasks" element={<Tasks idUser={idUser}/>} />
             <Route path="/insights" element={<Insight idUser={idUser}/>} />
         </Routes>
     </BrowserRouter>

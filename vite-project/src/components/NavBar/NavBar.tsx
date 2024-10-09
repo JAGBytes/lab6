@@ -3,7 +3,6 @@ import styles from "./NavBar.module.css"
 import logo from '../../assets/logo.png'; 
 import { Link } from 'react-router-dom';
 
-
 function NavBar() {
     
     return (
@@ -17,7 +16,7 @@ function NavBar() {
         <nav>
             <ul className={styles['nav-list']}>
                 <li>
-                    <Link to="/" className={styles['nav-link']}>Tasks</Link>
+                    <Link to="/tasks" className={styles['nav-link']}>Tasks</Link>
                 </li>
                 <li>
                     <Link to="/insights" className={styles['nav-link']} >Insights</Link>
