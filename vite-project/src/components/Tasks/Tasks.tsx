@@ -3,15 +3,12 @@ import styles from './Task.module.css'
 import Load from './Load';
 import * as serviceTasks from '../Services/Service';
 import { Task } from "../Services/TaskObject";
+import { useOutletContext } from 'react-router-dom';
 
 
+export default function Tasks() {
+    const { idUser } = useOutletContext<{ idUser: string }>();
 
-type Props = {
-    idUser: string;
-};
-
-export default function Tasks(props: Props) {
-    const {idUser} = props;
     const [post, setPost] = useState<Task[]>([]);
     const [taskName, setTaskName] = useState('');
     const [taskDescription, setTaskDescription] = useState('');
@@ -40,13 +37,21 @@ export default function Tasks(props: Props) {
     }
 
     useEffect(() => {
-        getTasks();
-    }, []);
+        if (idUser) {
+          getTasks(); 
+        }
+      }, [idUser]);
 
-    const getTasks = async () => {
-        const answer = await serviceTasks.getTasks(props.idUser);
-        setPost(answer.data);
-    }
+      const getTasks = async () => {
+        try {
+          const answer = await serviceTasks.getTasks(idUser);
+          if (answer && answer.data) {
+            setPost(answer.data);
+          }
+        } catch (error) {
+          console.error('Error fetching tasks:', error);
+        }
+      };
     
     const addTask = async () => {   
         if (!taskName || !taskDescription || !taskDate || !taskDifficulty || !taskPriority || !taskTime) {
@@ -107,7 +112,7 @@ export default function Tasks(props: Props) {
     }
 
     const generateRandomTasks = async () => {
-        await serviceTasks.randomTasks();
+        await serviceTasks.randomTasks(idUser);
         getTasks();
     }
 

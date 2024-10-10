@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './Task.module.css'
 
 type Props = {
@@ -29,6 +29,29 @@ export default function Load(props: Props) {
         onCheckboxChange,
         onDelete
     } = props;
+    const [header, setHeader] = useState('');
+    useEffect(() => {
+        switch (priority){
+            case 1:
+                setHeader('first-priority');
+                break;
+            case 2:
+                setHeader('second-priority');
+                break;
+            case 3:
+                setHeader('third-priority');
+                break;
+            case 4:
+                setHeader('four-priority');
+                break;
+            case 5:
+                setHeader('five-priority');
+                break;
+            default:
+                setHeader('');
+                break;
+        }
+      }, []);
 
     const handleCheckboxChange = () => {
         if (id){
@@ -44,12 +67,8 @@ export default function Load(props: Props) {
 
     const completedClass = isCompleted ? 'COMPLETED' : '';
 
-    const priorityClass = `${1 === priority? 'first-priority': ''}
-                            ${2 === priority? 'second-priority':''}
-                            ${3 === priority? 'third-priority': ''}
-                            ${4 === priority? 'fourth-priority': ''}
-                            ${5 === priority? 'fifth-priority': ''}`;
-
+    
+    
     return (
         <div className={[styles.task, styles[completedClass]].join(' ')}>
             <input
@@ -60,7 +79,7 @@ export default function Load(props: Props) {
                 disabled={isCompleted}
             />
             <div className={styles['task-priority']}>
-                <div className={[styles['circle'], styles[priorityClass]].join(' ')}><span>{priority}</span></div>
+                <div className={[styles['circle'], styles[header]].join(' ')}><span>{priority}</span></div>
                 <h2>{name}</h2>
             </div>
             <p style={{ opacity: 0.8 }}>{description}</p>

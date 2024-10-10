@@ -7,13 +7,12 @@ import PriorityDiagram from '../loadPriorityDiagram/'
 import TimeDiagram from '../loadTimeDiagram/'
 import TotalTimeDiagram from '../loadTotalTimeDiagram/'
 import React, { useEffect, useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 
 
-type Props = {
-    idUser: string;
-};
-export default function Insight(props: Props) {
-    const {idUser} = props;
+export default function Insight() {
+    const { idUser } = useOutletContext<{ idUser: string }>();
+
     const [data,setData] = useState("difficultyHistogram");
     const handleGraphicChange = (e : React.ChangeEvent<HTMLSelectElement>) => {setData(e.target.value);} 
     

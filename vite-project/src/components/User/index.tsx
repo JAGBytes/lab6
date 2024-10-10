@@ -1,24 +1,57 @@
-import React from 'react'
-import NavBar from '../NavBar/NavBar'; 
-import Tasks from '../Tasks/Tasks';
-import Insight from '../Insights/';
-import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import React, { useEffect,useState } from 'react'
+import NavBar  from '../NavBar/NavBar'; 
+import { Outlet } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { getUser } from '../Services/Service'; 
+import { User } from '../Services/UserObj';
 
-type Props = {
-    idUser : string;
-}
 
-function User(props : Props) {
-    const {idUser} = props;
+function UserRouter ()  {
+
+  const [user, setUser] = useState<User>();
+
+  const [email, setEmail] = useState('');
+  const [userName, setUserName] = useState('');
+
+  const { idUser } = useParams();
+
+  useEffect(() => {
+    if (idUser) {
+      getUserTask();
+    }
+  }, [idUser]);
+
+  const getUserTask = async () => {
+    try {
+      if(idUser) {
+        const answer = await getUser(idUser); // Asumiendo que getUser es una llamada API que devuelve los datos del usuario
+        if (answer && answer.data) {
+          setUser(answer.data); // Actualizamos el estado de user
+          setUserName(answer.data.username || '');
+          setEmail(answer.data.email || '');
+        }
+      }   
+    } catch (error: any) {
+      if (error.response) {
+          console.error("Error en el servidor: ", error.response.data);
+          alert(error.response.data);
+      } else if (error.request) {
+          console.error("No se recibió respuesta del servidor", error.request);
+          alert( error.request);
+      } else {
+          console.error("Error desconocido: ", error.message);
+          alert( error.message);
+      }
+  }
+  };
+  
+
   return (
-    <BrowserRouter>
-    <NavBar/>
-        <Routes>
-            <Route path="/" element={<Tasks idUser={idUser}/>} />
-            <Route path="/insights" element={<Insight idUser={idUser}/>} />
-        </Routes>
-    </BrowserRouter>
+    <>
+    <NavBar username={userName} idUser={ idUser }/>
+    <Outlet context={{ idUser }} />
+    </>
   )
 }
 
-export default User
+export default UserRouter

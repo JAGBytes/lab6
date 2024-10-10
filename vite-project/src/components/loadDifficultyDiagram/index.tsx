@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Chart, registerables } from 'chart.js';
 import { getTasks } from '../Services/Service'; 
 
@@ -16,7 +16,6 @@ type Props = {
     idUser : string
 }
 
-// callTasks ahora devuelve la promesa de los datos.
 async function callTasks(idUser : string) {
     const res = await getTasks(idUser);
     return res.data; 
@@ -24,15 +23,16 @@ async function callTasks(idUser : string) {
 }
 
 const TaskDifficultyChart: React.FC<Props> = ({idUser}) => {
+
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const chartRef = useRef<Chart | null>(null);
 
-    const handleCallTasks = () =>{
-        return callTasks(idUser);
-    }
+    const handleCallTasks = async () => {
+        const data = await callTasks(idUser);
+        return data; 
+    };
 
     useEffect(() => {
-        // Destruir el gráfico existente si ya existe
         if (chartRef.current) {
             chartRef.current.destroy();
         }
@@ -42,9 +42,10 @@ const TaskDifficultyChart: React.FC<Props> = ({idUser}) => {
     async function loadDifficultyDiagram() {
         const dataTask = await handleCallTasks();
 
-        if (!dataTask) return; // Si no hay datos, salir de la función para evitar errores.
+        if (!dataTask) return; 
 
         if (canvasRef.current) {
+
             const ctx = canvasRef.current.getContext('2d');
             if (!ctx) return;
 
@@ -113,7 +114,9 @@ const TaskDifficultyChart: React.FC<Props> = ({idUser}) => {
                 }
             });
         }
-    }
+    };
+
+
     return (
         <canvas id="myCanvasTask" ref={canvasRef}></canvas>
     );

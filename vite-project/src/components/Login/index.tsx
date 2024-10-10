@@ -3,15 +3,14 @@ import styles from './Login.module.css'
 import login from '../../assets/Login.png'
 import { Link } from 'react-router-dom';
 import * as LoginService from '../Services/LoginService';
-import {User} from '../Services/UserObj';
-
+import  {useNavigate}  from 'react-router-dom';
 
 type Props = {}
 
 function Login({}: Props) {
     const [emailUser, setImail] = useState('');
     const [password,setPassword] = useState('');
-
+    const [showPassword, setShowPassword] = useState(false);
     const handleImailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setImail(e.target.value);
     }
@@ -19,45 +18,86 @@ function Login({}: Props) {
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
     }
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
 
+    const history = useNavigate();
+
+    const handleClick = (idUser: string) => {
+        history(`/${idUser}`); 
+    };
+
+    const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault(); 
+        console.log("Form submitted");
+        startLogin();
+    };
     const startLogin = async () =>{
         const newUser = { 
             email : emailUser,
             passwd : password
         }
-        await LoginService.LoginUser(JSON.stringify(newUser));
+        try {
+            const answer = await LoginService.LoginUser(newUser);
+            handleClick(answer.data);
+        } catch (error: any) {
+            if (error.response) {
+                console.error("Error en el servidor: ", error.response.data);
+                alert(error.response.data);
+                throw new Error(error.response.data);  
+            } else if (error.request) {
+                console.error("No se recibió respuesta del servidor", error.request);
+                alert( error.request);
+                throw new Error('No se recibió respuesta del servidor');
+            } else {
+                console.error("Error desconocido: ", error.message);
+                alert( error.message);
+                throw new Error('Ocurrió un error al procesar la solicitud');
+            }
+        }
     }
 
   return (
     <div className={styles['main-container']}>
         <div className={styles['form-login']}>
             <h1 className="title-login">Welcome!</h1>
-            <form className={styles['form-container']}>
+            <form className={styles['form-container']} onSubmit={handleFormSubmit}>
                 <div className={styles['form-group']}>
-                    <label htmlFor="email" className="label-email">Email</label>
+                    <label htmlFor="email" className="label-email"><i className="fas fa-envelope"></i>Email</label>
                     <input type="email" id="email" className="input"
                     value={emailUser}
                     onChange={handleImailChange}
+                    required
                     />
                 </div>
                 <div className={styles['form-group']}>
-                    <label htmlFor="password" className="label-password">Password</label>
-                    <input id="password" type="password" className="input-password"
-                    value={password}
-                    onChange={handlePasswordChange}
-                    />
+                    <label htmlFor="password" className="label-password"><i className="fas fa-lock"></i>Password</label>
+                    <div className={styles['password-container']}>
+                        <input
+                            id="password"
+                            type={showPassword ? 'text' : 'password'}
+                            className={styles['password-input']}
+                            value={password}
+                            onChange={handlePasswordChange}
+                            required
+                        />
+                        <button type="button" onClick={togglePasswordVisibility} className={styles['password-button']}>
+                            {showPassword ? <i className="fas fa-eye-slash" style={{ color: '#15505d' }}></i> : <i className="fas fa-eye" style={{ color: '#15505d' }}></i>}
+                        </button>
+                    </div>
                 </div>
-            </form>
                 <button className={styles['button']}
-                onClick={startLogin}
+                type = 'submit'
                 >Sign In</button>
+            </form>
                 <p className={styles['create-count']}>Don't Have Account? 
                     <Link to='/Register' className={styles['a-create-count']}>Create Account</Link></p>
         </div>
         <div className={styles['picture-login']}>
             <img className={styles['img']} src={login}/>
             <h2 className={styles["title-image"]}>Task Manager</h2>
-            <p className={styles["paragraph-title"]}>Start to manage your tasks!</p>
+            <p className={styles["paragraph-title"]}>Manage your task in One Place with Ease!</p>
         </div>
     </div>
   )
