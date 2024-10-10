@@ -3,14 +3,10 @@ import NavBar  from '../NavBar/NavBar';
 import { Outlet } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { getUser } from '../Services/Service'; 
-import { User } from '../Services/UserObj';
 
 
 function UserRouter ()  {
 
-  const [user, setUser] = useState<User>();
-
-  const [email, setEmail] = useState('');
   const [userName, setUserName] = useState('');
 
   const { idUser } = useParams();
@@ -26,9 +22,7 @@ function UserRouter ()  {
       if(idUser) {
         const answer = await getUser(idUser); // Asumiendo que getUser es una llamada API que devuelve los datos del usuario
         if (answer && answer.data) {
-          setUser(answer.data); // Actualizamos el estado de user
-          setUserName(answer.data.username || '');
-          setEmail(answer.data.email || '');
+          setUserName(answer.data || '');
         }
       }   
     } catch (error: any) {

@@ -23,9 +23,9 @@ export const completeTask = async (idTask: string) => {
 }
 
 export const randomTasks = async (idUser: string) => {
-    return axios.get<any>(API+'generateTasks?idUser='+idUser);
+    return axios.post<any>(API+'generateTasks?idUser='+idUser);
 }
 
 export const getUser = async (id: string) => {
-    return axios.get<User>(API+'getUser?idUser='+id);
+    return axios.get<string>(API+'getUser?idUser='+id);
 }

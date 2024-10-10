@@ -16,6 +16,7 @@ export default function Tasks() {
     const [taskDifficulty, setTaskDifficulty] = useState('');
     const [taskPriority, setTaskPriority] = useState(1);
     const [taskTime, setTaskTime] = useState(0.1);
+    const [enableButton, setEnableButton] = useState(false);
     
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTaskName(e.target.value);
@@ -112,9 +113,19 @@ export default function Tasks() {
     }
 
     const generateRandomTasks = async () => {
-        await serviceTasks.randomTasks(idUser);
-        getTasks();
-    }
+        console.log("hola");
+        try {
+            setEnableButton(true); // Deshabilitar el botón y mostrar "Loading..."
+            const answer = await serviceTasks.randomTasks(idUser); // Generar tareas
+            await getTasks(); 
+            alert(answer.data);
+        } catch (error) {
+            console.error("Error generating tasks:", error);
+        } finally {
+            setEnableButton(false); // Habilitar el botón nuevamente después de la generación
+        }
+        console.log(enableButton);
+    };
 
 
   return (
@@ -206,7 +217,8 @@ export default function Tasks() {
             </div>
             <button onClick={() => addTask()}>Add</button>
         </div>
-        <button onClick={() => generateRandomTasks()}>Generate Random Tasks</button>
+        <button onClick={() => generateRandomTasks()} disabled={enableButton}>{enableButton ? 'Loading...' : 'Generate Random Tasks' }</button> 
+        
     </div>
     <div className={styles['task-container']}>
         {post.map((task, i) => <Load
