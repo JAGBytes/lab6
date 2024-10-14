@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import styles from "./NavBar.module.css"
 import logo from '../../assets/logo.png'; 
+import { Link } from 'react-router-dom';
+import  {useNavigate}  from 'react-router-dom';
 
-interface Props {
-    onSelect: (page: string) => void;
-};
+type Props = {
+    username: string,
+    idUser?: string
+}
 
-function NavBar({onSelect}: Props ) {
-    const [page, setPage] = useState("Home");
+function NavBar(props: Props) {
+    const {username, idUser} = props;
+    const history = useNavigate();
 
-    const handlePageChange = (newPage: string) => {
-    setPage(newPage);
-    onSelect(newPage);
+    const handleClick = () => {
+        history('/');  
     };
-
     return (
     
     <header className={styles['header']}>
@@ -25,17 +27,19 @@ function NavBar({onSelect}: Props ) {
         <nav>
             <ul className={styles['nav-list']}>
                 <li>
-                    <a className={styles['nav-link']} onClick={() => handlePageChange("Tasks")}>Tasks</a>
+                    <Link to={`/${idUser}`} className={styles['nav-link']}>Tasks</Link>
                 </li>
                 <li>
-                    <a className={styles['nav-link']} onClick={() => handlePageChange("Insights")}>Insights</a>
+                    <Link to={`/${idUser}/insights`} className={styles['nav-link']} >Insights</Link>
                 </li>
-            </ul>
-            <p>Página Actual: {page}</p>            
+            </ul>        
         </nav>
+        <div className={styles['user']}>
+            <h4>Welcome, {username}</h4>
+            <button className={styles['button']} onClick={handleClick}>Log Out</button>
+        </div>
     </header>
 
     );
 }
-
 export default NavBar;

@@ -4,10 +4,6 @@
     align-items: center;
 }
 
-.header-logo { /* Antes: img */
-    height: 50px;
-}
-
 .header-title { /* Antes: h1 */
     margin-left: 1rem;
 }
@@ -36,7 +32,6 @@
 
 .header {
     display: flex;
-    flex-direction: row;
     justify-content: space-between; 
     align-items: center; 
     background-color: #15505d;
@@ -44,4 +39,20 @@
     padding: 0 5rem 0 4rem; 
     box-sizing: border-box; 
     width: 100%; 
+}
+.user{
+    display: flex;
+    gap: 35px;
+    align-items: center;
+    align-content: center;
+}
+.button{
+    background-color: #7bd179;
+    border-radius: 9px;
+    height: 40px;
+    align-items: center;
+}
+
+.button:hover { /* Antes: nav ul li a:hover */
+    background-color: #eefb03;
 }

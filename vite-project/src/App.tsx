@@ -1,19 +1,26 @@
-import React from 'react';
-import NavBar from './components/NavBar/NavBar'; 
 import './App.css';
+import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import Register from './components/Register/index'
+import Login from './components/Login/index'
+import UserRouter from './components/User/index';
 import Tasks from './components/Tasks/Tasks';
+import Insight from './components/Insights'
 
 function App() {
-
-  const handleSelect = (page: string) => {
-    console.log(`Página seleccionada: ${page}`);
-  };
-
+  
   return (
-    <>
-      <NavBar onSelect={handleSelect} /> 
-      <Tasks></Tasks>
-    </>
+    <BrowserRouter>
+      <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/Register" element={<Register />} />
+
+          <Route path="/:idUser" element={<UserRouter />}>
+            <Route index element={<Tasks />} />
+            <Route path="insights" element={<Insight />} />
+          </Route>
+      </Routes>
+  </BrowserRouter>
+ 
   );
 };
 
