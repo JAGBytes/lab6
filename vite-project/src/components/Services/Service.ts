@@ -2,7 +2,7 @@
 import axios from "axios";
 import { Task } from "./TaskObject";
 import { User } from "./UserObj";
-const API = 'http://localhost:80/taskManager/';
+const API = 'https://taskmanagercvds-bjdmg9hwaaa7erg0.eastus-01.azurewebsites.net/taskManager/';
 
 
 export const getTasks = async (idUser :string) => {
